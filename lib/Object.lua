@@ -30,11 +30,12 @@ function Object:is(T)
 end
 
 function Object:__call(...)
-    if not Object.is_class(self) then
+    if not is_class(self) then
         error("Cannot call constructor on instance.")
     end
     local obj = setmetatable({}, self)
-    obj.__is_class = false
+    obj.__is_class = nil
+    obj.__is_inst = true
     obj:init(...)
     return obj
 end
@@ -43,9 +44,10 @@ function Object:classname()
     return "Object"
 end
 
-function Object:class()
-    return self.__is_class and self or getmetatable(self)
+function class(x)
+    return type(x) == "table" and rawget(x, "__is_class") == true and x or getmetatable(x)
 end
+Object.class = class
 
 function Object:cast_from(src)
     return src:is(self) -- Only allow upcasts by default
@@ -63,12 +65,19 @@ function Object:cast(to)
     return self
 end
 
-function Object.is_class(x)
+function is_class(x)
     return type(x) == "table" and rawget(x, "__is_class") == true
 end
+Object.is_class = is_class
 
 function Object.__concat(lhs,rhs)
-    return VOjbect.concatenate(lhs,rhs)
+    return Vector.vectorize(lhs,rhs)
 end
 
-setmetatable(Object, { __call = Object.__call })
+function Object.__tostring(v)
+    return rawget(v, "__is_class") == true and v.classname().." type" or "Object instance"
+end
+
+setmetatable(Object, { 
+    __call = Object.__call,
+})

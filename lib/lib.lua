@@ -1,5 +1,5 @@
 require "lib.Object"
-require "lib.VObject"
+require "lib.Vector"
 require "lib.ObjectOp"
 require "lib.Vec2"
 require "lib.Vec3"

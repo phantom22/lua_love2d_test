@@ -6,8 +6,8 @@ frame = 0
 
 local p, hover, prev_hover
 function love.load() -- (x,y,w,h,sx,sy,rot)
-    p = Rect(300,300,100,100,1,1,0)
-    p.transform:set_drot(math.pi/16)
+    p = Rect(300,300,100,15,1,1,0)
+    p.transform:set_drot(math.pi/16*8)
     p.transform:set_dpos(15,15)
 end
 

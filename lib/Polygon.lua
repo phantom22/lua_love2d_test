@@ -3,8 +3,8 @@ local inf = math.huge
 Polygon = Object:extend()
 
 function Polygon:init(x,y,w,h,sx,sy,rot,crnrs)
-    self.og_corners = VOjbect()
-    self.corners = VOjbect()
+    self.og_corners = Vector()
+    self.corners = Vector()
     self.bbox = nil
     self.og_w = 0
     self.og_h = 0
@@ -68,7 +68,7 @@ function Polygon:update_corners()
 end
 
 function Polygon:get_corners()
-    local cs, nargs = VOjbect(), #self.corners
+    local cs, nargs = Vector(), #self.corners
     local min_x, max_x = inf, -inf
     local min_y, max_y = inf, -inf
 

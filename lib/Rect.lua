@@ -2,8 +2,8 @@ Rect = Polygon:extend()
 
 function Rect:init(x,y,w,h,sx,sy,rot)
     local w2, h2 = w/2, h/2
-    self.og_corners = VOjbect({ Vec2(-w2,-h2), Vec2(-w2,h2), Vec2(w2,h2), Vec2(w2,-h2) }) -- tl, bl, br, tr
-    self.corners = VOjbect({ Vec2(-w2,-h2), Vec2(-w2,h2), Vec2(w2,h2), Vec2(w2,-h2) })
+    self.og_corners = Vector({ Vec2(-w2,-h2), Vec2(-w2,h2), Vec2(w2,h2), Vec2(w2,-h2) }) -- tl, bl, br, tr
+    self.corners = Vector({ Vec2(-w2,-h2), Vec2(-w2,h2), Vec2(w2,h2), Vec2(w2,-h2) })
     self.bbox = nil
     self.og_w = w
     self.og_h = h
