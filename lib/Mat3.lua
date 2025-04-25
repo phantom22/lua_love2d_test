@@ -65,8 +65,7 @@ function Mat3:inv()
         return Mat3(0, 0, 0, 0, 0, 0, 0, 0, 0)
     end
 
-    local a,b,c,d,e,f,g,h,i = self[1], self[2], self[3], self[4], self[5], self[6], self[7], self[8], self[9]
-    local t = 1 / _d
+    local t,a,b,c,d,e,f,g,h,i = 1 / _d, self[1], self[2], self[3], self[4], self[5], self[6], self[7], self[8], self[9]
     return Mat3((e*i-f*h)*t, (f*g-d*i)*t, (d*h-e*g)*t, (c*h-b*i)*t, (a*i-c*g)*t, (b*g-a*h)*t, (b*f-c*e)*t, (c*d-a*f)*t, (a*e-b*d)*t)
 end
 
@@ -171,4 +170,17 @@ local neg_disp = ObjectOp(Mat3,"-",{ fn = function (a) return Mat3(-a[1], -a[4],
 
 function Mat3.__unm(v)
     return neg_disp:resolve(v)
+end
+
+local pow_disp = ObjectOp(Mat3,"^",{
+        other_type = Mat3,
+        fn = function (a,b) return Mat3(a[1]^b[1], a[4]^b[4], a[7]^b[7], a[2]^b[2], a[5]^b[5], a[8]^b[8], a[3]^b[3], a[6]^b[6], a[9]^b[9]) end
+    },{
+        other_type = "number",
+        fn = function (a,b) return Mat3(a[1]^b, a[4]^b, a[7]^b, a[2]^b, a[5]^b, a[8]^b, a[3]^b, a[6]^b, a[9]^b) end,
+    }
+)
+
+function Mat3.__pow(lhs,rhs)
+    return pow_disp:resolve(lhs,rhs)
 end

@@ -107,3 +107,17 @@ local neg_disp = ObjectOp(Vec3,"-",{ fn = function (a) return Vec3(-a.x, -a.y, -
 function Vec3.__unm(v)
     return neg_disp:resolve(v)
 end
+
+local pow_disp = ObjectOp(Vec3,"^",{
+        other_type = Vec3, 
+        fn = function (a,b) return a.x^b.x + a.y^b.y + a.z^b.z end
+    },{
+        other_type = "number",
+        fn = function (a,b) return Vec3(a.x^b, a.y^b, a.z^b) end,
+        fn_com = function (a,b) return Vec3(a^b.x, a^b.y, a^b.z) end
+    }
+)
+
+function Vec3.__pow(lhs,rhs)
+    return pow_disp:resolve(lhs,rhs)
+end

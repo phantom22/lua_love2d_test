@@ -94,7 +94,7 @@ local div_disp = ObjectOp(Vec2,"/",
     }
 )
 
-function  Vec2.__div(lhs,rhs)
+function Vec2.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
@@ -102,4 +102,18 @@ local neg_disp = ObjectOp(Vec2,"-",{ fn = function (a) return Vec2(-a.x, -a.y) e
 
 function Vec2.__unm(v)
     return neg_disp:resolve(v)
+end
+
+local pow_disp = ObjectOp(Vec2,"^",{
+        other_type = Vec2, 
+        fn = function (a,b) return a.x^b.x + a.y^b.y end
+    },{
+        other_type = "number",
+        fn = function (a,b) return Vec2(a.x^b, a.y^b) end,
+        fn_com = function (a,b) return Vec2(a^b.x, a^b.y) end
+    }
+)
+
+function Vec2.__pow(lhs,rhs)
+    return pow_disp:resolve(lhs,rhs)
 end

@@ -146,3 +146,16 @@ local neg_disp = ObjectOp(Mat2,"-",{ fn = function (a) return Mat2(-a[1], -a[3],
 function Mat2.__unm(v)
     return neg_disp:resolve(v)
 end
+
+local pow_disp = ObjectOp(Mat2,"^",{
+        other_type = Mat2, 
+        fn = function (a,b) return Mat2(a[1]^b[1], a[3]^b[3], a[2]^b[2], a[4]^b[4]) end
+    },{
+        other_type = "number",
+        fn = function (a,b) return Mat2(a[1]^b, a[3]^b, a[2]^b, a[4]^b) end,
+    }
+)
+
+function Mat2.__pow(lhs,rhs)
+    return pow_disp:resolve(lhs,rhs)
+end

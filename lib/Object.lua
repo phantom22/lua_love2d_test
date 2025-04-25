@@ -70,10 +70,6 @@ function is_class(x)
 end
 Object.is_class = is_class
 
-function Object.__concat(lhs,rhs)
-    return Vector.vectorize(lhs,rhs)
-end
-
 function Object.__tostring(v)
     return rawget(v, "__is_class") == true and v.classname().." type" or "Object instance"
 end
