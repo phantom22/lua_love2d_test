@@ -1,4 +1,16 @@
 local Op = {};
+local name2sym = {
+    __add = "+",
+    __sub = "-",
+    __mul = "*",
+    __div = "/",
+    __mod = "%",
+    __pow = "^",
+    __unm = "-",
+    __eq = "==",
+    __lt = "<",
+    __le = "<=",
+}
 
 -- exp is assumed to be a class.
 function Op.interclass(lhs,rhs,lt,rt,_,fn,_)
@@ -64,18 +76,20 @@ end
 
 ObjectOp = Object:extend()
 
-function ObjectOp:init(root_class,op_symbol,...)
+-- ObjectOp(Object, <key of an arithmetic meta method>, { othertype = <one of type(x)> or a class, fn:(root_class,othertype), fn_com:(othertype,root_class), invert_operands:boolean }, ...)
+-- note that
+function ObjectOp:init(root_class,op_key,...)
     self.ops = {}
 
-    if not Object.is_class(root_class) then
+    if not is_class(root_class) then
         error("The first argument passed to ObjectOp must be of type class.")
     end
 
-    if type(op_symbol) ~= "string" then
-        error("The second argument passed to ObjectOp must be the string that represents the operator.")
+    if type(op_key) ~= "string" or name2sym[op_key] == nil then
+        error("The second argument passed to ObjectOp must a meta method key of an arithmetic operation. (eg. \"__add\",\"__sub\",...)")
     end
 
-    self.op_symbol = op_symbol
+    self.op_key = op_key
 
     local args = {...}
     local nargs = #args
@@ -96,25 +110,49 @@ function ObjectOp:init(root_class,op_symbol,...)
         other_type = other_type or "nil" -- this is needed for unary operators, those assume that ObjectOp:resolve receives rhs = nil.
 
         local ot_type = type(other_type)
-        local op
+        local o
         if root_class == other_type then
-            op = Op.interclass
+            o = Op.interclass
         elseif ot_type == "string" then
-            op = fn_com and Op.class_primitive_comm or (invert_operands and Op.primitive_class or Op.class_primitive)
-        elseif ot_type == "table" and Object.is_class(other_type) then
-            op = fn_com and Op.class_class_comm or Op.class_class
+            o = fn_com and Op.class_primitive_comm or (invert_operands and Op.primitive_class or Op.class_primitive)
+        elseif ot_type == "table" and is_class(other_type) then
+            o = fn_com and Op.class_class_comm or Op.class_class
         else
             error("Other type must be either a string or a class.")
         end
 
-        self.ops[i] = { op = op, other_type = other_type, fn = fn, fn_com = fn_com }
+        self.ops[i] = { op = o, other_type = other_type, fn = fn, fn_com = fn_com }
     end
+end
+
+local function format_type(x)
+    local r
+    if is_inst(x) then
+        r = x:classname()
+    elseif is_vector(x) then
+        if is_inst(x[1]) then
+            r = "Vector<"..x[1]:classname()..">" 
+        else
+            r = "Vector<"..type(x[1])..">"
+        end
+    else
+        r = type(x)
+    end
+    return r
 end
 
 function ObjectOp:resolve(lhs,rhs)
     rhs = rhs or nil
 
     local nops, lt, rt, r = #self.ops, type(lhs), type(rhs), nil
+    local k = self.op_key
+
+    -- if either lhs or rhs are a Vector, then retrieve their arithmetic meta method and use it instead
+    if is_vector(lhs) then
+        return getmetatable(lhs)[k](lhs,rhs)
+    elseif is_vector(rhs) then
+        return getmetatable(rhs)[k](lhs,rhs)
+    end
 
     -- optimization for ObjectOps with only one operation
     if nops == 1 then
@@ -136,5 +174,5 @@ function ObjectOp:resolve(lhs,rhs)
         return r
     end
 
-    error("The "..(lt=="table" and lhs.classname and lhs:classname() or lt).." "..self.op_symbol.." "..(rt=="table" and rhs.classname and rhs:classname() or rt).." operation is not defined.")
+    error("The "..format_type(lhs).." "..name2sym[k].." "..format_type(rhs).." operation is not defined.")
 end

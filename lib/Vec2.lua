@@ -45,7 +45,7 @@ function Vec2:unpack()
     return self.x, self.y
 end
 
-local sum_disp = ObjectOp(Vec2,"+",{
+local sum_disp = ObjectOp(Vec2,"__add",{
         other_type = Vec2, 
         fn = function (a,b) return Vec2(a.x+b.x, a.y+b.y) end
     },{
@@ -59,7 +59,7 @@ function Vec2.__add(lhs,rhs)
     return sum_disp:resolve(lhs,rhs)
 end
 
-local sub_disp = ObjectOp(Vec2,"-",{
+local sub_disp = ObjectOp(Vec2,"__sub",{
         other_type = Vec2, 
         fn = function (a,b) return Vec2(a.x-b.x, a.y-b.y) end
     },{
@@ -73,7 +73,7 @@ function Vec2.__sub(lhs,rhs)
     return sub_disp:resolve(lhs,rhs)
 end
 
-local mul_disp = ObjectOp(Vec2,"*",{
+local mul_disp = ObjectOp(Vec2,"__mul",{
         other_type = Vec2, 
         fn = function (a,b) return a.x*b.x + a.y*b.y end
     },{
@@ -87,7 +87,7 @@ function  Vec2.__mul(lhs,rhs)
     return mul_disp:resolve(lhs,rhs)
 end
 
-local div_disp = ObjectOp(Vec2,"/",
+local div_disp = ObjectOp(Vec2,"__div",
     {
         other_type = "number",
         fn = function (a,b) return Vec2(a.x/b, a.y/b) end,
@@ -98,13 +98,13 @@ function Vec2.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
-local neg_disp = ObjectOp(Vec2,"-",{ fn = function (a) return Vec2(-a.x, -a.y) end })
+local neg_disp = ObjectOp(Vec2,"__unm",{ fn = function (a) return Vec2(-a.x, -a.y) end })
 
 function Vec2.__unm(v)
     return neg_disp:resolve(v)
 end
 
-local pow_disp = ObjectOp(Vec2,"^",{
+local pow_disp = ObjectOp(Vec2,"__pow",{
         other_type = Vec2, 
         fn = function (a,b) return a.x^b.x + a.y^b.y end
     },{

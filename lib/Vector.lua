@@ -167,27 +167,28 @@ end
 
 Vector.__index = Vector
 
+local inst_mttable = {
+    __index = __index,
+    __add = __add,
+    __sub = __sub,
+    __mul = __mul,
+    __div = __div,
+    __mod = __mod,
+    __pow = __pow,
+    __unm = __unm,
+    __eq = __eq,
+    __lt = __lt,
+    __le = __le,
+    __tostring = __tostring,
+    __concat = __concat
+}
 function Vector:__call(t)
     t = t or {}
     if is_vector(self) then
         error("Cannot call constructor on instance.")
     end
 
-    local obj = setmetatable(t, {
-        __index = __index,
-        __add = __add,
-        __sub = __sub,
-        __mul = __mul,
-        __div = __div,
-        __mod = __mod,
-        __pow = __pow,
-        __unm = __unm,
-        __eq = __eq,
-        __lt = __lt,
-        __le = __le,
-        __tostring = __tostring,
-        __concat = __concat
-    })
+    local obj = setmetatable(t, inst_mttable)
     --obj.__index = Vector
     obj.__is_vec = true
     return obj

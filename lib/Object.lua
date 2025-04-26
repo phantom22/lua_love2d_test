@@ -70,6 +70,11 @@ function is_class(x)
 end
 Object.is_class = is_class
 
+function is_inst(x)
+    return type(x) == "table" and rawget(x, "__is_inst") == true
+end
+Object.is_inst = is_inst
+
 function Object.__tostring(v)
     return rawget(v, "__is_class") == true and v.classname().." type" or "Object instance"
 end

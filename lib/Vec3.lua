@@ -49,7 +49,7 @@ function Vec3:clone()
     return Vec3(self.x, self.y, self.z)
 end
 
-local sum_disp = ObjectOp(Vec3,"+",{
+local sum_disp = ObjectOp(Vec3,"__add",{
         other_type = Vec3, 
         fn = function (a,b) return Vec3(a.x+b.x, a.y+b.y, a.z+b.z) end
     },{
@@ -63,7 +63,7 @@ function Vec3.__add(lhs,rhs)
     return sum_disp:resolve(lhs,rhs)
 end
 
-local sub_disp = ObjectOp(Vec3,"-",{
+local sub_disp = ObjectOp(Vec3,"__sub",{
         other_type = Vec3, 
         fn = function (a,b) return Vec3(a.x-b.x, a.y-b.y, a.z-b.z) end
     },{
@@ -77,7 +77,7 @@ function Vec3.__sub(lhs,rhs)
     return sub_disp:resolve(lhs,rhs)
 end
 
-local mul_disp = ObjectOp(Vec3,"*",{
+local mul_disp = ObjectOp(Vec3,"__mul",{
         other_type = Vec3, 
         fn = function (a,b) return a.x*b.x + a.y*b.y + a.z*b.z end
     },{
@@ -91,7 +91,7 @@ function  Vec3.__mul(lhs,rhs)
     return mul_disp:resolve(lhs,rhs)
 end
 
-local div_disp = ObjectOp(Vec3,"/",
+local div_disp = ObjectOp(Vec3,"__div",
     {
         other_type = "number",
         fn = function (a,b) return Vec3(a.x/b, a.y/b, a.z/b) end,
@@ -102,13 +102,13 @@ function  Vec3.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
-local neg_disp = ObjectOp(Vec3,"-",{ fn = function (a) return Vec3(-a.x, -a.y, -a.z) end })
+local neg_disp = ObjectOp(Vec3,"__unm",{ fn = function (a) return Vec3(-a.x, -a.y, -a.z) end })
 
 function Vec3.__unm(v)
     return neg_disp:resolve(v)
 end
 
-local pow_disp = ObjectOp(Vec3,"^",{
+local pow_disp = ObjectOp(Vec3,"__pow",{
         other_type = Vec3, 
         fn = function (a,b) return a.x^b.x + a.y^b.y + a.z^b.z end
     },{

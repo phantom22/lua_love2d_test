@@ -86,7 +86,7 @@ function Mat2.zero()
     return Mat2(0, 0, 0, 0)
 end
 
-local sum_disp = ObjectOp(Mat2,"+",{
+local sum_disp = ObjectOp(Mat2,"__add",{
         other_type = Mat2, 
         fn = function (a,b) return Mat2(a[1]+b[1], a[3]+b[3], a[2]+b[2], a[4]+b[4]) end
     },{
@@ -100,7 +100,7 @@ function Mat2.__add(lhs,rhs)
     return sum_disp:resolve(lhs,rhs)
 end
 
-local sub_disp = ObjectOp(Mat2,"-",{
+local sub_disp = ObjectOp(Mat2,"__sub",{
         other_type = Mat2, 
         fn = function (a,b) return Mat2(a[1]-b[1], a[3]-b[3], a[2]-b[2], a[4]-b[4]) end
     },{
@@ -114,7 +114,7 @@ function Mat2.__sub(lhs,rhs)
     return sub_disp:resolve(lhs,rhs)
 end
 
-local mul_disp = ObjectOp(Mat2,"*",{
+local mul_disp = ObjectOp(Mat2,"__mul",{
         other_type = Mat2, 
         fn = function (a,b) return Mat2(a[1]*b[1]+a[3]*b[2], a[1]*b[3]+a[3]*b[4], a[2]*b[1]+a[4]*b[2], a[2]*b[3]+a[4]*b[4]) end
     },{
@@ -131,7 +131,7 @@ function Mat2.__mul(lhs,rhs)
     return mul_disp:resolve(lhs,rhs)
 end
 
-local div_disp = ObjectOp(Mat2,"/", {
+local div_disp = ObjectOp(Mat2,"__div", {
         other_type = "number",
         fn = function (a,b) local t = 1/b; return Mat2(a[1]*t, a[3]*t, a[2]*t, a[4]*t) end,
     }
@@ -141,13 +141,13 @@ function Mat2.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
-local neg_disp = ObjectOp(Mat2,"-",{ fn = function (a) return Mat2(-a[1], -a[3], -a[2], -a[4]) end })
+local neg_disp = ObjectOp(Mat2,"__unm",{ fn = function (a) return Mat2(-a[1], -a[3], -a[2], -a[4]) end })
 
 function Mat2.__unm(v)
     return neg_disp:resolve(v)
 end
 
-local pow_disp = ObjectOp(Mat2,"^",{
+local pow_disp = ObjectOp(Mat2,"__pow",{
         other_type = Mat2, 
         fn = function (a,b) return Mat2(a[1]^b[1], a[3]^b[3], a[2]^b[2], a[4]^b[4]) end
     },{

@@ -109,7 +109,7 @@ function Mat3.zero()
     return Mat3(0, 0, 0, 0, 0, 0, 0, 0, 0)
 end
 
-local sum_disp = ObjectOp(Mat3,"+",{
+local sum_disp = ObjectOp(Mat3,"__add",{
         other_type = Mat3, 
         fn = function (a,b) return Mat3(a[1]+b[1], a[4]+b[4], a[7]+b[7], a[2]+b[2], a[5]+b[5], a[8]+b[8], a[3]+b[3], a[6]+b[6], a[9]+b[9]) end
     },{
@@ -123,7 +123,7 @@ function Mat3.__add(lhs,rhs)
     return sum_disp:resolve(lhs,rhs)
 end
 
-local sub_disp = ObjectOp(Mat3,"-",{
+local sub_disp = ObjectOp(Mat3,"__sub",{
         other_type = Mat3, 
         fn = function (a,b) return Mat3(a[1]-b[1], a[4]-b[4], a[7]-b[7], a[2]-b[2], a[5]-b[5], a[8]-b[8], a[3]-b[3], a[6]-b[6], a[9]-b[9]) end
     },{
@@ -137,7 +137,7 @@ function Mat3.__sub(lhs,rhs)
     return sub_disp:resolve(lhs,rhs)
 end
 
-local mul_disp = ObjectOp(Mat3,"*",{
+local mul_disp = ObjectOp(Mat3,"__mul",{
         other_type = Mat3, 
         fn = function (a,b) return Mat3(a[1]*b[1]+a[4]*b[2]+a[7]*b[3], a[1]*b[4]+a[4]*b[5]+a[7]*b[6], a[1]*b[7]+a[4]*b[8]+a[7]*b[9], 
                                         a[2]*b[1]+a[5]*b[2]+a[8]*b[3], a[2]*b[4]+a[5]*b[5]+a[8]*b[6], a[2]*b[7]+a[5]*b[8]+a[8]*b[9],
@@ -156,7 +156,7 @@ function Mat3.__mul(lhs,rhs)
     return mul_disp:resolve(lhs,rhs)
 end
 
-local div_disp = ObjectOp(Mat3,"/", {
+local div_disp = ObjectOp(Mat3,"__div", {
         other_type = "number",
         fn = function (a,b) local t = 1/b; return Mat3(a[1]*t, a[4]*t, a[7]*t, a[2]*t, a[5]*t, a[8]*t, a[3]*t, a[6]*t, a[9]*t) end,
     }
@@ -166,13 +166,13 @@ function Mat3.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
-local neg_disp = ObjectOp(Mat3,"-",{ fn = function (a) return Mat3(-a[1], -a[4], -a[7], -a[2], -a[5], -a[8], -a[3], -a[6], -a[9]) end })
+local neg_disp = ObjectOp(Mat3,"__unm",{ fn = function (a) return Mat3(-a[1], -a[4], -a[7], -a[2], -a[5], -a[8], -a[3], -a[6], -a[9]) end })
 
 function Mat3.__unm(v)
     return neg_disp:resolve(v)
 end
 
-local pow_disp = ObjectOp(Mat3,"^",{
+local pow_disp = ObjectOp(Mat3,"__pow",{
         other_type = Mat3,
         fn = function (a,b) return Mat3(a[1]^b[1], a[4]^b[4], a[7]^b[7], a[2]^b[2], a[5]^b[5], a[8]^b[8], a[3]^b[3], a[6]^b[6], a[9]^b[9]) end
     },{
