@@ -1,36 +1,40 @@
---package.path = package.path .. ";./lib/?.lua" --specifies to love where to find lib/ files.. workaround
 require "lib.lib"
-io.stdout:setvbuf("no") -- workaround for enabling prints to console
 
 frame = 0
 
-local p, hover, prev_hover
+local color_hover, color_normal = Vector({1,0,0}), Vector({1,1,1})
+local color_curr = color_normal
+
+local p, hover
+local ac = AnimController(150 * ms)
+
+ac.onUpdate = function()
+    color_hover = vmath.clamp(color_hover + vmath.random(3,-255,255) / (255 * 100), 0, 1)
+
+end
+
 function love.load()
-    p = Rect(300,300,100,15,1,1,0)
+    p = Rect(300,300,100,300,1,1,0)
     p.transform:set_drot(math.pi/16)
     p.transform:set_dpos(15,15)
 end
 
 function love.update(dt)
-    if not hover then
-        p.transform:update(dt)
-    end
-
     local m = Vec2(love.mouse.getPosition())
 
     hover = p:mouse_hover(m)
+
+    local t =  ac:get_t(hover, dt)
+    color_curr = color_normal * (1-t) + color_hover * t
+
+    if not hover then
+        p.transform:update(dt)
+    end
 end
 
-local color_hover, color_normal = {1,0,0,1}, {1,1,1,1}
+
 function love.draw()
-    if hover ~= prev_hover then
-        if hover then
-            love.graphics.setColor(unpack(color_hover))
-        else
-            love.graphics.setColor(unpack(color_normal))
-        end
-        prev_hover = hover
-    end
+    love.graphics.setColor(Color.unpack(color_curr))
 
     love.graphics.polygon("fill", p:get_corners())
 

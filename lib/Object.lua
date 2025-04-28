@@ -79,6 +79,6 @@ function Object.__tostring(v)
     return rawget(v, "__is_class") == true and v.classname().." type" or "Object instance"
 end
 
-setmetatable(Object, { 
-    __call = Object.__call,
+setmetatable(Object, {
+    __call = Object.__call
 })

@@ -131,6 +131,8 @@ function Mat2.__mul(lhs,rhs)
     return mul_disp:resolve(lhs,rhs)
 end
 
+Mat2.__mul = mul_disp.resolve
+
 local div_disp = ObjectOp(Mat2,"__div", {
         other_type = "number",
         fn = function (a,b) local t = 1/b; return Mat2(a[1]*t, a[3]*t, a[2]*t, a[4]*t) end,

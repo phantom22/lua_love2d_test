@@ -458,6 +458,25 @@ function vmath.random(l,x,y)
             res[i] = math.random()
         end
     end
-    
+
     return res
+end
+
+function vmath.clamp(v,m,M)
+    local o,l = Vector(), #v
+    if l == 0 then
+        return o
+    end
+
+    for i = 1,l do
+        local t = v[i]
+        if t > M then
+            t = M
+        elseif t < m then
+            t = m
+        end
+        o[i] = t
+    end
+
+    return o
 end
