@@ -1,16 +1,26 @@
 require "lib.lib"
+require "helpers"
 
 frame = 0
 
-local color_hover, color_normal = Vector({1,0,0}), Vector({1,1,1})
-local color_curr = color_normal
+local color_hover, color_normal = HSV(0,1,1), HSV(0,0,1)
+local color_curr = HSV(0,0,1)
 
 local p, hover
-local ac = AnimController(150 * ms)
+local ac = AnimController(1500 * ms)
 
-ac.onUpdate = function()
-    color_hover = vmath.clamp(color_hover + vmath.random(3,-255,255) / (255 * 100), 0, 1)
-
+ac.onUpdate = function(self)
+   color_hover.hsv[1] = self.prev_t
+end
+ac.onCycleEnd = function()
+    color_hover = HSV(0,1,1)
+end
+local hframe
+ac.onCycleHalf = function()
+    hframe = frame
+end
+ac.onCycleHalfContinue = function(self)
+    color_hover.hsv[1] = ((frame - hframe) / (self.duration * 60) % 1)
 end
 
 function love.load()
@@ -25,7 +35,8 @@ function love.update(dt)
     hover = p:mouse_hover(m)
 
     local t =  ac:get_t(hover, dt)
-    color_curr = color_normal * (1-t) + color_hover * t
+
+    color_curr.hsv = color_normal.hsv * (1-t) + color_hover.hsv * t
 
     if not hover then
         p.transform:update(dt)
@@ -34,7 +45,7 @@ end
 
 
 function love.draw()
-    love.graphics.setColor(Color.unpack(color_curr))
+    love.graphics.setColor(color_curr:unpack())
 
     love.graphics.polygon("fill", p:get_corners())
 
