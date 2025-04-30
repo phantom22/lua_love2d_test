@@ -3,24 +3,24 @@ require "helpers"
 
 frame = 0
 
-local color_hover, color_normal = HSV(0,1,1), HSV(0,0,1)
-local color_curr = HSV(0,0,1)
+local color_hover, color_normal = HSL(0,1,0.5), HSL(0,0,1)
+local color_curr = HSL(0,0,1)
 
 local p, hover
 local ac = AnimController(1500 * ms)
 
 ac.onUpdate = function(self)
-   color_hover.hsv[1] = self.prev_t
+   color_hover[1] = self.prev_t
 end
 ac.onCycleEnd = function()
-    color_hover = HSV(0,1,1)
+    color_hover[1], color_hover[2], color_hover[3] = 0,1,1
 end
 local hframe
 ac.onCycleHalf = function()
     hframe = frame
 end
 ac.onCycleHalfContinue = function(self)
-    color_hover.hsv[1] = ((frame - hframe) / (self.duration * 60) % 1)
+    color_hover[1] = (((frame - hframe) / (self.duration * 1000)) % 1)
 end
 
 function love.load()
@@ -36,7 +36,7 @@ function love.update(dt)
 
     local t =  ac:get_t(hover, dt)
 
-    color_curr.hsv = color_normal.hsv * (1-t) + color_hover.hsv * t
+    color_curr = color_normal * (1-t) + color_hover * t
 
     if not hover then
         p.transform:update(dt)

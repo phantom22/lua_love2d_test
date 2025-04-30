@@ -1,26 +1,86 @@
+local function rgb2hsl(self)
+    local r,g,b = self[1],self[2],self[3]
+    local max = math.max(r,g,b)
+    local min = math.min(r,g,b)
+    local h,s,l
+
+    local mmm,mpm = max - min, max + min
+
+    -- Calculate lightness
+    l = mpm / 2
+
+    -- Calculate saturation
+    if max == min then
+        s = 0
+    else
+        if l <= 0.5 then
+            s = mmm / mpm
+        else
+            s = mmm / (2 - mmm)
+        end
+    end
+
+    -- Calculate hue
+    if max == min then
+        h = 0 -- achromatic (gray)
+    else
+        if max == r then
+            h = (g - b) / mmm
+        elseif max == g then
+            h = 2 + (b - r) / mmm
+        else -- max == b
+            h = 4 + (r - g) / mmm
+        end
+
+        h = h / 6 -- convert to degrees
+        if h < 0 then
+            h = h + 1
+        end
+    end
+
+    return h, s, l
+end
+
 RGBa = Object:extend()
-function RGBa:init(r,g,b,a)
-    self.v = Vector({r,g,b,a})
-end
 function RGBa:unpack()
-    return self.v[1], self.v[2], self.v[3], self.v[4]
+    return self[1], self[2], self[3], self[4]
+end
+function RGBa:to_hsl()
+    HSL(rgb2hsl(self))
 end
 
-RGB = Object:extend()
-function RGB:init(r,g,b)
-    self.v = Vector({r,g,b})
-end
+RGB = Vector:extend()
 function RGB:unpack()
-    return self.v[1], self.v[2], self.v[3], 1
+    return self[1], self[2], self[3], 1
 end
 
-HSV = Object:extend()
-function HSV:init(h,s,v)
-    self.hsv = Vector({h,s,v})
-    self.v = Vector({})
+HSL = Vector:extend()
+local function hueToRgb(p, q, t)
+    if t < 0 then t = t + 1 end
+    if t > 1 then t = t - 1 end
+    if t < 0.16666 then return p + (q - p) * 6 * t end
+    if t < 0.5 then return q end
+    if t < 0.66666 then return p + (q - p) * (0.66666 - t) * 6 end
+    return p
 end
-function HSV:update_v()
-    local h,s,v = self.hsv[1], self.hsv[2], self.hsv[3]
+
+function HSL:unpack()
+    local h,s,l = self[1], self[2], self[3]
+
+    if s == 0 then
+        -- Achromatic (gray)
+        return l, l, l
+    else
+        local q = l < 0.5 and l*(1+s) or l*(1-s)+s
+        local p = 2 * l - q
+
+        return hueToRgb(p,q,h+0.33333), hueToRgb(p,q,h), hueToRgb(p,q,h-0.33333)
+    end
+end
+
+HSV = Vector:extend()
+function HSV:unpack()
+    local h,s,v = self[1], self[2], self[3]
     local c, h_ = s*v, h*6
     local x = c * (1-math.abs(math.fmod(h_,2) - 1))
     local r,g,b = 0,0,0
@@ -39,9 +99,6 @@ function HSV:update_v()
     end
     local m = v - c
 
-    self.v[1],self.v[2],self.v[3] = r+m,g+m,b+m
+    return r+m, g+m, b+m
 end
-function HSV:unpack()
-    self:update_v()
-    return self.v[1], self.v[2], self.v[3], 1
-end
+
