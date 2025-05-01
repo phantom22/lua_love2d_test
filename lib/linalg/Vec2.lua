@@ -106,7 +106,7 @@ end
 
 local pow_disp = ObjectOp(Vec2,"__pow",{
         other_type = Vec2, 
-        fn = function (a,b) return a.x^b.x + a.y^b.y end
+        fn = function (a,b) return Vec2(a.x^b.x,a.y^b.y) end
     },{
         other_type = "number",
         fn = function (a,b) return Vec2(a.x^b, a.y^b) end,
