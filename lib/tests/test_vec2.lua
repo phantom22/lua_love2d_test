@@ -1,6 +1,7 @@
 do
     local v = Vec2(math.pi/2, -math.pi/2)
 
+    assert_eq(tostring(Vec2), "Vec2 type", "Vec2.__tostring()")
     assert_true(_eq(v.x,math.pi/2) and _eq(v.y,-math.pi/2), "Vec2:init()")
     assert_eq(v:classname(),"Vec2","Vec2:classname()")
     assert_true(v:class() == Vec2,"Vec2:class()")
@@ -46,7 +47,7 @@ do
     local v2 = Vec2(-98,12)
     local v3 = Vec2(-4,4)
 
-    assert_true(_eq(v1*0+2*v1/2-15*(-v2 * 1)/15,Vec2(1,-1)) and _eq(v1*v2,-9858) and _eq(v3^2,Vec2(16,16)) and _eq(v3^Vec2(0,1),Vec2(1,4)),"Vec2 arithmetic")
+    assert_true(_eq(v3/4+2*v1/2-15*(-v2 * 1)/15,Vec2(0,0)) and _eq(v1*v2,-9858) and _eq(v3^2,Vec2(16,16)) and _eq(v3^Vec2(0,1),Vec2(1,4)),"Vec2 arithmetic")
 end
 
 assert_summary("Vec2")
