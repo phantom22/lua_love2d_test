@@ -141,17 +141,34 @@ function Vector.__tostring(v)
 end
 
 function Vector.__index(t, k)
-    -- take only the first element. Assumed to be a Vector of elements with same superclass
-    local _first,f = rawget(t,1)
-    if _first ~= nil then
-        f = _first[k]
+    -- constructor
+    local constr = getmetatable(t)
+    -- super vector "class"
+    local sv, o = constr, nil
+    while sv ~= Vector do
+        o = rawget(sv,k)
+        if o ~= nil then
+            return o
+        end
+        sv = getmetatable(sv)
     end
 
-    local o,l = Vector(), #t
+    -- take only the first element. Assumed to be a Vector of elements with same superclass
+    local _first,f = rawget(t,1),nil
+    -- if vector contains (assumed) same type tables, access first table to resolve indexed k
+    if type(_first) == "table" then
+        f = _first[k]
+    else
+        return nil
+    end
 
+    o = constr()
+    local l = #t
+    -- if retrieved value from first entry is not a function, resolve k for each entry and return a new vector
     if type(f) ~= "function" then
-        for i = 1,l do
-            o[i] = t[i][k]
+        o[1] = f
+        for i = 2,l do
+            o[i] = rawget(t,i)[k]
         end
         return o
     end
@@ -172,7 +189,25 @@ function Vector.__index(t, k)
     end
 end
 
+function Vector:extend()
+    local cls = {}
+
+    for k, v in pairs(self) do
+        -- for now, k == "extend" is a work around for Vector.__index to retrieve correctly Vector:extend
+        if k == "extend" or k:find("__") == 1 then cls[k] = v end
+    end
+
+    cls.__index = Vector.__index
+    cls.super = self
+    setmetatable(cls, self)
+    return cls
+end
+
 function Vector:__call(t,...)
+    if is_vector(self) then
+        error("Cannot call constructor on instance.")
+    end
+
     local v
     local args = {...}
     if #args ~= 0 then
@@ -181,28 +216,12 @@ function Vector:__call(t,...)
         v = t or {}
     end
 
-    if is_vector(self) then
-        error("Cannot call constructor on instance.")
-    end
-
     local obj = setmetatable(v, self)
     obj.__is_vec = true
     return obj
 end
 
-function Vector:extend()
-    local cls = {}
-
-    for k, v in pairs(self) do
-        if k:find("__") == 1 then cls[k] = v end
-    end
-
-    cls.__index = cls
-    cls.super = self
-    setmetatable(cls, self)
-    return cls
-end
-
 setmetatable(Vector, {
-    __call = Vector.__call
+    __call = Vector.__call,
+    __tostring = Vector.__tostring
 })

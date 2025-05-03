@@ -41,7 +41,15 @@ local function rgb2hsl(self)
     return h, s, l
 end
 
-RGBa = Object:extend()
+Color = Vector:extend()
+function Color:set(x,y,z,w)
+    self[1] = x
+    self[2] = y
+    self[3] = z
+    self[4] = w
+end
+
+RGBa = Color:extend()
 function RGBa:unpack()
     return self[1], self[2], self[3], self[4]
 end
@@ -49,12 +57,12 @@ function RGBa:to_hsl()
     HSL(rgb2hsl(self))
 end
 
-RGB = Vector:extend()
+RGB = Color:extend()
 function RGB:unpack()
     return self[1], self[2], self[3], 1
 end
 
-HSL = Vector:extend()
+HSL = Color:extend()
 local function hueToRgb(p, q, t)
     if t < 0 then t = t + 1 end
     if t > 1 then t = t - 1 end
@@ -78,7 +86,7 @@ function HSL:unpack()
     end
 end
 
-HSV = Vector:extend()
+HSV = Color:extend()
 function HSV:unpack()
     local h,s,v = self[1], self[2], self[3]
     local c, h_ = s*v, h*6

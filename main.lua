@@ -10,10 +10,10 @@ local p, hover
 local ac = AnimController(1500 * ms)
 
 ac.onUpdate = function(self)
-   color_hover[1] = self.prev_t
+    color_hover[1] = self.prev_t
 end
 ac.onCycleEnd = function()
-    color_hover[1], color_hover[2], color_hover[3] = 0,1,1
+    color_hover:set(0,1,0.5)
 end
 local hframe
 ac.onCycleHalf = function()

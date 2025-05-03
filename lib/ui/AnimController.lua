@@ -15,8 +15,11 @@ function AnimController:init(duration,fn)
 end
 function AnimController:get_t(cond, dt)
     self:update_fn(cond, dt)
+    self:onUpdate()
     if cond then
-        self:onUpdate()
+        self:onTrue()
+    else
+        self:onFalse()
     end
     local t, prev_t = math.min(self.ctime / self.duration, 1), self.prev_t
     if t == 0 then
@@ -41,6 +44,8 @@ function AnimController:get_t(cond, dt)
     self.prev_t = t
     return t
 end
+function AnimController:onTrue() end
+function AnimController:onFalse() end
 function AnimController:onUpdate() end
 function AnimController:onCycleStart() end
 function AnimController:onCycleHalf() end
