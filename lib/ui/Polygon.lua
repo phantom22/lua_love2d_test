@@ -79,7 +79,7 @@ function Polygon:get_corners()
 
     local T = self.transform.T
     for i = 1,nargs do
-        local p = (T * self.corners[i]:to_vec3()):to_vec2()
+        local p = T * self.corners[i]
 
         local x,y = p.x, p.y
 
@@ -123,3 +123,12 @@ end
 function Polygon:get_inv_T()
     return self.transform.inv_T
 end
+
+function Polygon:draw()
+    love.graphics.polygon("fill", self:get_corners())
+end
+
+-- function Polygon:onmouseover() end
+-- function Polygon:onmouseleave() end
+-- function Polygon:onmousedown() end
+-- function Polygon:onmouseup() end

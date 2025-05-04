@@ -6,7 +6,7 @@ frame = 0
 local color_hover, color_normal = RGB(1,1,1), HSL(0,1,0.5)
 
 local p, hover
-local ac = AnimController(550 * ms)
+local ac = AnimController({duration_in=ms(550),duration_out=ms(350)})
 
 function love.load()
     p = Rect(300,300,100,300,1,1,0)
@@ -34,9 +34,9 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.setColor(vmath.lerp(RGB(color_normal:unpack()), color_hover, hover_t):unpack())
+    vmath.lerp(color_normal:to_rgb(), color_hover, hover_t):setLoveColor()
 
-    love.graphics.polygon("fill", p:get_corners())
+    p:draw()
 
     frame = frame + 1
 end

@@ -147,6 +147,9 @@ local mul_disp = ObjectOp(Mat3,"__mul",{
         other_type = Vec3,
         fn = function (a,b) return Vec3(a[1]*b.x+a[4]*b.y+a[7]*b.z, a[2]*b.x+a[5]*b.y+a[8]*b.z, a[3]*b.x+a[6]*b.y+a[9]*b.z) end
     },{
+        other_type = Vec2,
+        fn = function (a,b) local z_inv = 1/(a[3]*b.x+a[6]*b.y+a[9]); return Vec2((a[1]*b.x+a[4]*b.y+a[7])*z_inv, (a[2]*b.x+a[5]*b.y+a[8])*z_inv) end
+    },{
         other_type = "number",
         fn = function (a,b) return Mat3(a[1]*b, a[2]*b, a[3]*b, a[4]*b, a[5]*b, a[6]*b, a[7]*b, a[8]*b, a[9]*b) end,
         fn_com = function (a,b) return Mat3(a*b[1], a*b[2], a*b[3], a*b[4], a*b[5], a*b[6], a*b[7], a*b[8], a*b[9]) end

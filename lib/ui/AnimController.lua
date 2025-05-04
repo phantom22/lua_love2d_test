@@ -3,14 +3,23 @@ local function update_fn(ac,cond,dt)
     if cond then
         ac.ctime = math.min(ac.ctime + dt, ac.duration)
     elseif ac.ctime > 0 then
-        ac.ctime = math.max(ac.ctime - dt, 0)
+        ac.ctime = math.max(ac.ctime - dt * ac.out_scale, 0)
     end
 end
-function AnimController:init(duration,fn)
+
+-- args = {duration,fn?} or {duration_in,duration_out,fn?}
+function AnimController:init(args)
+    args = args or {}
+    if args.duration then
+        self.duration = args.duration / 2
+        self.out_scale = 1
+    else
+        self.duration = args.duration_in
+        self.out_scale = self.duration / args.duration_out
+    end
     self.prev_t = 0
-    self.duration = duration
     self.ctime = 0
-    self.update_fn = fn or update_fn
+    self.update_fn = args.fn or update_fn
     self.cycle = false
 end
 function AnimController:get_t(cond, dt)
@@ -21,6 +30,7 @@ function AnimController:get_t(cond, dt)
     else
         self:onFalse()
     end
+
     local t, prev_t = math.min(self.ctime / self.duration, 1), self.prev_t
     if t == 0 then
         if prev_t ~= 0 then
@@ -53,4 +63,6 @@ function AnimController:onCycleEnd() end
 function AnimController:onCycleRestart() end
 function AnimController:onCycleHalfContinue() end
 
-ms = 1/1000
+function ms(n)
+    return n / 1000
+end

@@ -16,13 +16,10 @@ function Rect:mouse_hover(m)
     if self:mouse_over_bbox(m) then
         local w2, h2 = self.w/2, self.h/2
 
-        local im = (self.transform.inv_T * m:to_vec3()):to_vec2()
+        local im = (self.transform.inv_T * m):to_vec2()
 
         return -w2 <= im.x and im.x <= w2 and -h2 <= im.y and im.y <= h2
     else
         return false
     end
 end
-
-
---Rect = setmetatable(Rect, { init = Rect.init, __call = Object.__call, __index = Polygon })
