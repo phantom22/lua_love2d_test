@@ -2,7 +2,8 @@
 
 Mat2 = Object:extend();
 
-function Mat2:init(m11, m12, m21, m22)
+-- column-major initialization
+function Mat2:init(m11, m21, m12, m22)
     self[1] = m11 or 0
     self[2] = m21 or 0
     self[3] = m12 or 0
@@ -42,11 +43,11 @@ function Mat2:cast_from(src)
 end
 
 function Mat2:clone()
-    return Mat2(self[1], self[3], self[2], self[4])
+    return Mat2(self[1], self[2], self[3], self[4])
 end
 
 function Mat2:tr()
-    return Mat2(self[1], self[2], self[3], self[4])
+    return Mat2(self[1], self[3], self[2], self[4])
 end
 
 function Mat2:det()
@@ -66,7 +67,7 @@ end
 
 function Mat2.rot(theta)
     local c, s = math.cos(theta), math.sin(theta)
-    return Mat2(c, -s, s, c)
+    return Mat2(c, s, -s, c)
 end
 
 function Mat2:scale(sx,sy)
@@ -75,7 +76,7 @@ end
 
 function Mat2:scale_rot(sx,sy,theta)
     local c, s = math.cos(theta), math.sin(theta)
-    return Mat2(sx*c, -sy*s, sx*s, sy*c)
+    return Mat2(sx*c, sx*s, -sy*s, sy*c)
 end
 
 function Mat2.id()
@@ -88,11 +89,11 @@ end
 
 local sum_disp = ObjectOp(Mat2,"__add",{
         other_type = Mat2, 
-        fn = function (a,b) return Mat2(a[1]+b[1], a[3]+b[3], a[2]+b[2], a[4]+b[4]) end
+        fn = function (a,b) return Mat2(a[1]+b[1], a[2]+b[2], a[3]+b[3], a[4]+b[4]) end
     },{
         other_type = "number",
-        fn = function (a,b) return Mat2(a[1]+b, a[3]+b, a[2]+b, a[4]+b) end,
-        fn_com = function (a,b) return Mat2(a+b[1], a+b[3], a+b[2], a+b[4]) end
+        fn = function (a,b) return Mat2(a[1]+b, a[2]+b, a[3]+b, a[4]+b) end,
+        fn_com = function (a,b) return Mat2(a+b[1], a+b[2], a+b[3], a+b[4]) end
     }
 )
 
@@ -102,11 +103,11 @@ end
 
 local sub_disp = ObjectOp(Mat2,"__sub",{
         other_type = Mat2, 
-        fn = function (a,b) return Mat2(a[1]-b[1], a[3]-b[3], a[2]-b[2], a[4]-b[4]) end
+        fn = function (a,b) return Mat2(a[1]-b[1], a[2]-b[2], a[3]-b[3], a[4]-b[4]) end
     },{
         other_type = "number",
-        fn = function (a,b) return Mat2(a[1]-b, a[3]-b, a[2]-b, a[4]-b) end,
-        fn_com = function (a,b) return Mat2(a-b[1], a-b[3], a-b[2], a-b[4]) end
+        fn = function (a,b) return Mat2(a[1]-b, a[2]-b, a[3]-b, a[4]-b) end,
+        fn_com = function (a,b) return Mat2(a-b[1], a-b[2], a-b[3], a-b[4]) end
     }
 )
 
@@ -116,14 +117,14 @@ end
 
 local mul_disp = ObjectOp(Mat2,"__mul",{
         other_type = Mat2, 
-        fn = function (a,b) return Mat2(a[1]*b[1]+a[3]*b[2], a[1]*b[3]+a[3]*b[4], a[2]*b[1]+a[4]*b[2], a[2]*b[3]+a[4]*b[4]) end
+        fn = function (a,b) return Mat2(a[1]*b[1]+a[3]*b[2], a[2]*b[1]+a[4]*b[2], a[1]*b[3]+a[3]*b[4], a[2]*b[3]+a[4]*b[4]) end
     },{
         other_type = Vec2,
         fn = function (a,b) return Vec2(a[1]*b.x+a[3]*b.y, a[2]*b.x+a[4]*b.y) end
     },{
         other_type = "number",
-        fn = function (a,b) return Mat2(a[1]*b, a[3]*b, a[2]*b, a[4]*b) end,
-        fn_com = function (a,b) return Mat2(a*b[1], a*b[3], a*b[2], a*b[4]) end
+        fn = function (a,b) return Mat2(a[1]*b, a[2]*b, a[3]*b, a[4]*b) end,
+        fn_com = function (a,b) return Mat2(a*b[1], a*b[2], a*b[3], a*b[4]) end
     }
 )
 
@@ -133,7 +134,7 @@ end
 
 local div_disp = ObjectOp(Mat2,"__div", {
         other_type = "number",
-        fn = function (a,b) local t = 1/b; return Mat2(a[1]*t, a[3]*t, a[2]*t, a[4]*t) end,
+        fn = function (a,b) local t = 1/b; return Mat2(a[1]*t, a[2]*t, a[3]*t, a[4]*t) end,
     }
 )
 
@@ -141,7 +142,7 @@ function Mat2.__div(lhs,rhs)
     return div_disp:resolve(lhs,rhs)
 end
 
-local neg_disp = ObjectOp(Mat2,"__unm",{ fn = function (a) return Mat2(-a[1], -a[3], -a[2], -a[4]) end })
+local neg_disp = ObjectOp(Mat2,"__unm",{ fn = function (a) return Mat2(-a[1], -a[2], -a[3], -a[4]) end })
 
 function Mat2.__unm(v)
     return neg_disp:resolve(v)
@@ -149,10 +150,10 @@ end
 
 local pow_disp = ObjectOp(Mat2,"__pow",{
         other_type = Mat2, 
-        fn = function (a,b) return Mat2(a[1]^b[1], a[3]^b[3], a[2]^b[2], a[4]^b[4]) end
+        fn = function (a,b) return Mat2(a[1]^b[1], a[2]^b[2], a[3]^b[3], a[4]^b[4]) end
     },{
         other_type = "number",
-        fn = function (a,b) return Mat2(a[1]^b, a[3]^b, a[2]^b, a[4]^b) end,
+        fn = function (a,b) return Mat2(a[1]^b, a[2]^b, a[3]^b, a[4]^b) end,
     }
 )
 

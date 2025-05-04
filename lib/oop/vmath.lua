@@ -1,5 +1,5 @@
 local function vectorize_m_un(v,num_f,cl_f)
-    local res,l = Vector(), #v
+    local res,l = getmetatable(v)(), #v
     if l == 0 then
         return res
     end
@@ -17,11 +17,12 @@ local function vectorize_m_un(v,num_f,cl_f)
 end
 
 local function vectorize_m_bin(l,r,num_f,cl_f)
-    local res = Vector()
+    local res = nil
     local a,b = is_vector(l), is_vector(r)
 
     if a and b then
         local n = #l
+        res = getmetatable(l)()
         if n ~= #r then
             error("Vector size mismatch in Vectorized operation.")
         end
@@ -43,6 +44,7 @@ local function vectorize_m_bin(l,r,num_f,cl_f)
         return res
     elseif a then
         local n = #l
+        res = getmetatable(l)()
 
         if n == 0 then
             return res
@@ -61,6 +63,7 @@ local function vectorize_m_bin(l,r,num_f,cl_f)
         return res
     elseif b then
         local n = #r
+        res = getmetatable(r)()
 
         if n == 0 then
             return res
@@ -191,7 +194,7 @@ function vmath.tointeger(v)
 end
 
 function vmath.log(v,base)
-    local res,l = Vector(), #v
+    local res,l = getmetatable(v)(), #v
     if l == 0 then
         return res
     end
@@ -204,7 +207,8 @@ function vmath.log(v,base)
 end
 
 function vmath.modf(v)
-    local a,b,l = Vector(), Vector(), #v
+    local constr = getmetatable(v)
+    local a,b,l = constr(), constr(), #v
     if l == 0 then
         return a
     end
@@ -260,7 +264,7 @@ function vmath.random(l,x,y)
 end
 
 function vmath.clamp(v,m,M)
-    local o,l = Vector(), #v
+    local o,l = getmetatable(v)(), #v
     if l == 0 then
         return o
     end
@@ -273,6 +277,20 @@ function vmath.clamp(v,m,M)
             t = m
         end
         o[i] = t
+    end
+
+    return o
+end
+
+function vmath.lerp(v,w,t)
+    local o,l = getmetatable(v)(), #v
+
+    if l == 0 then
+        return o
+    end
+
+    for i = 1,l do
+        o[i] = v[i] * (1-t) + w[i] * t
     end
 
     return o

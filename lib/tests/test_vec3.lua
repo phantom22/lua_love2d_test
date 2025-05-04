@@ -43,12 +43,39 @@ do
 end
 
 do
-    local v1 = Vec3(99,-13,-2)
-    local v2 = Vec3(-98,12,1)
-    local v3 = Vec3(-4,4,4)
+    local v1 = Vec3(99,-13,5)
+    local v2 = Vec3(-98,12,4)
+    local v3 = Vec3(15,-3,3)
+    local v4 = Vec3(4,16,2)
 
+    assert_true(_eq(v1+v2, v2+v1) and _eq(v1+v2,Vec3(1,-1,9)),"Vec3+Vec3")
+    assert_true(_eq(5+v1,v1+5) and _eq(v1+5,Vec3(104,-8,10)),"Vec3+number & number+Vec3")
 
-    assert_true(_eq(v3/4+2*v1/2-15*(-v2 * 1)/15,Vec3(0,0,0)) and _eq(v1*v2,-9860) and _eq(v3^2,Vec3(16,16,16)) and _eq(v3^Vec3(0,1,2),Vec3(1,4,16)),"Vec3 arithmetic")
+    assert_true(_eq(v1-v2,Vec3(197,-25,1)) and _eq(v2-v1,Vec3(-197,25,-1)),"Vec3-Vec3")
+    assert_true(_eq(v1-2,Vec3(97,-15,3)) and _eq(2-v1,Vec3(-97,15,-3)),"Vec3-number & number-Vec3")
+
+    assert_true(
+        _eq(v1*v2,v2*v1) and
+        _eq(v1*v2,-9838),
+    "Vec3*Vec3")
+
+    assert_true(
+        _eq(v2*2,2*v2) and _eq(v2*2,Vec3(-196,24,8)) and
+        _eq(v1*3,3*v1) and _eq(v1*3,Vec3(297,-39,15)),
+    "Vec3*number & number*Vec3")
+
+    assert_true(_eq(v1/5,Vec3(99/5,-13/5,1)) and _eq(v2/3,Vec3(-98/3,4,4/3)), "Vec3/number")
+
+    assert_true(_eq(-v1,Vec3(-99,13,-5)) and _eq(-v2,Vec3(98,-12,-4)), "-Vec3")
+
+    assert_true(_eq(v3^v4,Vec3(50625,43046721,9)) and _eq(v4^v3,Vec3(1073741824,0.000244,8)), "Vec3^Vec3")
+
+    assert_true(
+        _eq(v1^3,Vec3(970299,-2197,125)) and
+        _eq(v2^2,Vec3(9604,144,16)) and
+        _eq(v3^4,Vec3(50625,81,81)) and
+        _eq(v4^5,Vec3(1024,1048576,32)),
+    "Vec3^number")
 end
 
 assert_summary("Vec3")

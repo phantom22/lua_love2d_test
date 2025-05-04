@@ -45,9 +45,37 @@ end
 do
     local v1 = Vec2(99,-13)
     local v2 = Vec2(-98,12)
-    local v3 = Vec2(-4,4)
+    local v3 = Vec2(15,-3)
+    local v4 = Vec2(4,16)
 
-    assert_true(_eq(v3/4+2*v1/2-15*(-v2 * 1)/15,Vec2(0,0)) and _eq(v1*v2,-9858) and _eq(v3^2,Vec2(16,16)) and _eq(v3^Vec2(0,1),Vec2(1,4)),"Vec2 arithmetic")
+    assert_true(_eq(v1+v2, v2+v1) and _eq(v1+v2,Vec2(1,-1)),"Vec2+Vec2")
+    assert_true(_eq(5+v1,v1+5) and _eq(v1+5,Vec2(104,-8)),"Vec2+number & number+Vec2")
+
+    assert_true(_eq(v1-v2,Vec2(197,-25)) and _eq(v2-v1,Vec2(-197,25)),"Vec2-Vec2")
+    assert_true(_eq(v1-2,Vec2(97,-15)) and _eq(2-v1,Vec2(-97,15)),"Vec2-number & number-Vec2")
+
+    assert_true(
+        _eq(v1*v2,v2*v1) and
+        _eq(v1*v2,-9858),
+    "Vec2*Vec2")
+
+    assert_true(
+        _eq(v2*2,2*v2) and _eq(v2*2,Vec2(-196,24)) and
+        _eq(v1*3,3*v1) and _eq(v1*3,Vec2(297,-39)),
+    "Vec2*number & number*Vec2")
+
+    assert_true(_eq(v1/5,Vec2(99/5,-13/5)) and _eq(v2/3,Vec2(-98/3,4)), "Vec2/number")
+
+    assert_true(_eq(-v1,Vec2(-99,13)) and _eq(-v2,Vec2(98,-12)), "-Vec2")
+
+    assert_true(_eq(v3^v4,Vec2(50625,43046721)) and _eq(v4^v3,Vec2(1073741824,0.000244)), "Vec2^Vec2")
+
+    assert_true(
+        _eq(v1^3,Vec2(970299,-2197)) and
+        _eq(v2^2,Vec2(9604,144)) and
+        _eq(v3^4,Vec2(50625,81)) and
+        _eq(v4^5,Vec2(1024,1048576)),
+    "Vec2^number")
 end
 
 assert_summary("Vec2")

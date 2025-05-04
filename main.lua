@@ -15,9 +15,12 @@ end
 ac.onCycleEnd = function()
     color_hover:set(0,1,0.5)
 end
-local hframe
+local hframe = 0
 ac.onCycleHalf = function()
     hframe = frame
+end
+ac.onFalse = function ()
+    hframe = hframe + 1
 end
 ac.onCycleHalfContinue = function(self)
     color_hover[1] = (((frame - hframe) / (self.duration * 1000)) % 1)
@@ -36,7 +39,7 @@ function love.update(dt)
 
     local t =  ac:get_t(hover, dt)
 
-    color_curr = color_normal * (1-t) + color_hover * t
+    color_curr = vmath.lerp(color_normal,color_hover,t)
 
     if not hover then
         p.transform:update(dt)
