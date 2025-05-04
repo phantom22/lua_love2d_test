@@ -13,7 +13,7 @@ do
 
     v2.x = 5
 
-    assert_neq(v1,v2,"Vec3:clone()")
+    assert_true(v1 ~= v2 and _eq(v1,Vec3(13,25,5)) and _eq(v2,Vec3(5,25,5)),"Vec3:clone()")
 end
 
 do

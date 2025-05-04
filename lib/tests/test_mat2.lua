@@ -13,7 +13,7 @@ do
 
     m2[2] = 5
 
-    assert_neq(m1,m2,"Mat2:clone()")
+    assert_true(m1 ~= m2 and _eq(m1,Mat2(13,25,-13,-25)) and _eq(m2,Mat2(13,5,-13,-25)),"Mat2:clone()")
 end
 
 do
