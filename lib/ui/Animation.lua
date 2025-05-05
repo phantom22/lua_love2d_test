@@ -8,7 +8,7 @@ Timing = {
 }
 
 Easing = {
-    no_ease = function (t)
+    linear = function (t)
         return t
     end,
     in_quad = function (t)
@@ -28,49 +28,55 @@ Easing = {
 
 Animation = Object:extend()
 
--- args = {duration,timing_in?,timing_out?,ease_in?,ease_out?} or {duration_in,duration_out,timing_in?,timing_out?,ease_in?,ease_out?}
--- self.duration stands for duration_in
--- self.out_scale just rescales the passed dt to update_fn
+--- specify EITHER duration OR duration_in AND duration_out:
+--- 
+---  * if duration is specified, it will be treated as the duration for BOTH the in AND out animations;
+---  * all durations are assumed to be in milliseconds.
+--- 
+--- for custom ease functions, specify EITHER ease OR ease_in AND/OR ease_out:
+--- 
+---  * if ease is specified, it will be treated as the ease function for BOTH the ease_in AND ease_out animations.
+--- 
+--- for custom timing functions, specify timing_in AND/OR timing_out
 function Animation:init(args)
     args = args or {}
 
     if args.duration then
-        self.duration = args.duration / 2
+        self.duration = args.duration / 2000
         self.out_scale = 1
     else
-        self.duration = args.duration_in
-        self.out_scale = self.duration / args.duration_out
+        self.duration = args.duration_in / 1000
+        self.out_scale = args.duration_in / args.duration_out
     end
 
     if args.ease then
         self.ease_in = args.ease
         self.ease_out = args.ease
     else
-        self.ease_in = args.ease_in or Easing.no_ease
-        self.ease_out = args.ease_out or Easing.no_ease
+        self.ease_in = args.ease_in or Easing.linear
+        self.ease_out = args.ease_out or Easing.linear
     end
 
     self.prev_t = 0
     self.ctime = 0
 
-    self.timing_in = Timing.timing_in
-    self.timing_out = Timing.timing_out
+    self.timing_in = args.timing_in or Timing.timing_in
+    self.timing_out = args.timing_out or Timing.timing_out
 
     self.cycle = false
 end
 
 function Animation:get_t(anim_in, dt)
-    self:onUpdate()
-
     if anim_in then
         self:timing_in(dt)
-        self:onTrue()
+        self:onEaseIn()
     else
         self:timing_out(dt)
-        self:onFalse()
+        self:onEaseOut()
     end
+    self:onUpdate()
 
-    local t, prev_t = math.min(self.ctime / self.duration, 1), self.prev_t
+    local t, prev_t = math.max(math.min(self.ctime / self.duration, 1), 0), self.prev_t
 
     if anim_in then
         t = self.ease_in(t)
@@ -101,15 +107,11 @@ function Animation:get_t(anim_in, dt)
     return t
 end
 
-function Animation:onTrue() end
-function Animation:onFalse() end
+function Animation:onEaseIn() end
+function Animation:onEaseOut() end
 function Animation:onUpdate() end
 function Animation:onCycleStart() end
 function Animation:onCycleHalf() end
 function Animation:onCycleEnd() end
 function Animation:onCycleRestart() end
 function Animation:onCycleHalfContinue() end
-
-function ms(n)
-    return n / 1000
-end
