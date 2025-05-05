@@ -6,7 +6,7 @@ frame = 0
 local color_hover, color_normal = RGB(1,1,1), HSL(0,1,0.5)
 
 local p, hover
-local ac = AnimController({duration_in=ms(550),duration_out=ms(350)})
+local ac = Animation({duration_in=ms(150),duration_out=ms(150),ease_out=Easing.out_quad})
 
 function love.load()
     p = Rect(300,300,100,300,1,1,0)
